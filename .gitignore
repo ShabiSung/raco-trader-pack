@@ -1,6 +1,8 @@
 __pycache__/
 *.pyc
 
-# 跑 skill 產生的個人資料（持股、訂單、紀錄）不要推上來
+# trader/ 是你自己的資料，不要推上來：
+# config.json（你的英文名字和 Email、預算）、持股、訂單、紀錄
+# 只有設定範本 config.example.json 進版控
 trader/*
-!trader/config.json
+!trader/config.example.json

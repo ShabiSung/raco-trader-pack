@@ -4,7 +4,7 @@
 
 裡面是 [Trader Skill](https://github.com/Jakeschincariol/trader-skill)（Jake Schincariol 作，MIT 授權）的十一個 skill，Raco 幫你設定好了：
 
-- **設定檔填好了**：`trader/config.json` 預算 5000 美元、留一成備用現金、單一檔最多 25%、模擬交易
+- **設定範本填好了**：`trader/config.example.json` 預算 5000 美元、留一成備用現金、單一檔最多 25%、模擬交易；安裝時複製成你自己的 `trader/config.json`，再填上你的英文名字和 Email
 - **中文 CLAUDE.md**：Claude 一律用繁體中文回答、數字整理成表格、什麼事該叫哪個 skill
 - **中文說明.md**：十一個 skill 各用一句話說它做什麼、怎麼叫它
 
@@ -18,6 +18,7 @@
 - **Python 3.8 以上**：不用另外裝任何套件
 - **Git**：下載這個專案用
 - **網路**：讀美國證交會、眾議院和新聞網站的公開資料，不用註冊、不用 API 金鑰
+- **你的英文名字和 Email**：美國證交會（SEC）規定查資料要附上。安裝時 Claude 會問你，只存在你電腦上的 `trader/config.json`，只在查 SEC 資料時附在連線裡給 SEC，不會上傳到 GitHub 或其他地方
 
 Python 和 Git 沒有的話，Claude 安裝時會幫你裝。
 
@@ -37,6 +38,8 @@ git clone https://github.com/ShabiSung/raco-trader-pack.git
 cd raco-trader-pack
 claude
 ```
+
+第一次打開時，Claude 會把 `trader/config.example.json` 複製成 `trader/config.json`，再問你的英文名字和 Email 填進去。`trader/config.json` 已經列在 `.gitignore`，你 fork 之後推送也不會把名字和 Email 帶上去。
 
 ## 使用方式
 
@@ -129,7 +132,7 @@ rm -rf /tmp/raco-trader-pack
 git clone --depth 1 https://github.com/ShabiSung/raco-trader-pack.git /tmp/raco-trader-pack
 mkdir -p .claude/skills trader
 cp -R /tmp/raco-trader-pack/.claude/skills/trader-* .claude/skills/
-[ -f trader/config.json ] || cp /tmp/raco-trader-pack/trader/config.json trader/
+[ -f trader/config.json ] || cp /tmp/raco-trader-pack/trader/config.example.json trader/config.json
 [ -f CLAUDE.md ] || cp /tmp/raco-trader-pack/CLAUDE.md .
 cp /tmp/raco-trader-pack/中文說明.md .
 ```
@@ -141,13 +144,14 @@ Remove-Item -Recurse -Force "$env:TEMP\raco-trader-pack" -ErrorAction SilentlyCo
 git clone --depth 1 https://github.com/ShabiSung/raco-trader-pack.git "$env:TEMP\raco-trader-pack"
 New-Item -ItemType Directory -Force ".claude\skills", "trader" | Out-Null
 Copy-Item -Recurse -Force "$env:TEMP\raco-trader-pack\.claude\skills\trader-*" ".claude\skills\"
-if (-not (Test-Path "trader\config.json")) { Copy-Item "$env:TEMP\raco-trader-pack\trader\config.json" "trader\" }
+if (-not (Test-Path "trader\config.json")) { Copy-Item "$env:TEMP\raco-trader-pack\trader\config.example.json" "trader\config.json" }
 if (-not (Test-Path "CLAUDE.md")) { Copy-Item "$env:TEMP\raco-trader-pack\CLAUDE.md" "." }
 Copy-Item "$env:TEMP\raco-trader-pack\中文說明.md" "."
 ```
 
 - 資料夾裡本來就有 `CLAUDE.md` 的話不要覆蓋，把跟單包 `CLAUDE.md` 的內容接在原本檔案的最後面（用 UTF-8 存）。
-- 本來就有 `trader/config.json` 的話保留使用者原本的設定，不要蓋掉。
+- 本來就有 `trader/config.json` 的話保留使用者原本的設定，不要蓋掉（上面的指令已經會跳過）。
+- `trader/config.json` 是使用者自己的設定，第 3 步會填進英文名字和 Email。這個資料夾如果是 git 倉庫（有 `.git`），在它的 `.gitignore` 加一行 `trader/`（已經有就不用），設定和持股紀錄才不會被推上去。
 
 **方式 B：Claude Code 外掛**（想在每個資料夾都能叫到這些 skill 時）
 
@@ -158,9 +162,20 @@ claude plugin install raco-trader-pack@raco-trader
 
 - 已經加過這個 marketplace 的話，先執行 `claude plugin marketplace update raco-trader`。
 - 外掛裝的 skill 名稱會變成 `/raco-trader-pack:trader-copycat` 這樣。
-- 設定檔還是要放在使用者工作的資料夾：照方式 A 的最後三行，把 `trader/config.json`、`CLAUDE.md`、`中文說明.md` 複製過來。
+- 設定檔還是要放在使用者工作的資料夾：照方式 A 先 clone 到暫存資料夾，再跑最後三行，把 `trader/config.example.json` 複製成 `trader/config.json`，`CLAUDE.md`、`中文說明.md` 也複製過來。
 
-### 3. 跑一次確認能用
+### 3. 填使用者的 SEC 身分（英文名字和 Email）
+
+美國證交會（SEC）規定，每次查資料都要在連線裡附上查詢者的名字和 Email。每個人填自己的，不要共用。
+
+- 打開 `trader/config.json` 看 `sec_user_agent`：已經是使用者自己的名字和 Email，就保留、跳過這一步。
+- 是空的（`""`）、或還是舊版的共用名稱 `Raco Trader Pack raco-trader-pack@example.com`：先問使用者的英文名字和 Email，告訴他「美國證交會規定查資料要附上；只存在這台電腦的 `trader/config.json`，只在查 SEC 資料時附在連線裡給 SEC，不會上傳到 GitHub 或其他地方」。
+- 拿到之後寫進 `trader/config.json` 的 `sec_user_agent`，格式是「英文名字 空格 Email」，例如 `"sec_user_agent": "Alex Chen alex.chen@example.com"`。不要自己編，也不要用別人的。
+- 填完才繼續下一步。
+
+這一欄空著的時候：`trader-copycat`、`trader-analyst` 不會連 SEC，會停下來說要先填；`trader-news` 照樣看新聞，但會跳過 8-K 公告。之後任何 skill 要連 SEC 時欄位是空的，Claude 都會先問再跑（寫在 `CLAUDE.md`）。
+
+### 4. 跑一次確認能用
 
 在安裝的資料夾執行（Windows 先設 `$env:PYTHONIOENCODING="utf-8"`，`python3` 換成 `python` 或 `py`）：
 
@@ -169,16 +184,17 @@ python3 .claude/skills/trader-copycat/edgar13f.py filings 1067983
 python3 .claude/skills/trader-alerts/alerts.py clock
 ```
 
-- 第一行會連美國證交會，看到波克夏（BERKSHIRE HATHAWAY INC）的 13F-HR 申報清單就是成功。
+- 第一行會連美國證交會，看到波克夏（BERKSHIRE HATHAWAY INC）的 13F-HR 申報清單就是成功。出現 `SEC requires a User-Agent` 代表第 3 步還沒填好，回去填。
 - 第二行會印出紐約時間和美股現在有沒有開盤（沒開盤時結束代碼是 1，這是正常的）。
-- 證交會回 403 的話：問使用者的英文名字和 Email，寫進 `trader/config.json` 的 `sec_user_agent`（格式 `"Name name@example.com"`），再跑一次。
+- 證交會回 403 的話：先確認 `sec_user_agent` 是「英文名字 空格 Email」；格式對的話通常是查太快，等幾分鐘再跑一次。
 - 用方式 B 安裝的話，腳本在 `~/.claude/plugins/` 底下，用 `find ~/.claude -name edgar13f.py` 找到路徑再跑。
 
-### 4. 告訴使用者
+### 5. 告訴使用者
 
 - 請在這個資料夾重新開啟 Claude Code，skill 才會載入。
 - 先試「五個常用跟單指令」的第一句：`用 trader-pelosi 列出最近兩週美國眾議員申報的股票交易，整理成表`。
 - 十一個 skill 一句話的說明在 `中文說明.md`；預設是模擬交易、沒有接任何券商。
+- 他的英文名字和 Email 存在這台電腦的 `trader/config.json`，想換直接跟 Claude 說。
 
 ---
 
@@ -197,7 +213,7 @@ python3 .claude/skills/trader-alerts/alerts.py clock
   trader-tax/                    成本與損益（lots.py）
   trader-alerts/                 價格提醒（alerts.py）
   trader-rebalance/              再平衡（rebalance.py）
-trader/config.json               設定好的設定檔
+trader/config.example.json       設定範本（安裝時複製成 trader/config.json，那份才是你的，不進版控）
 CLAUDE.md                        給 Claude 的中文規則
 中文說明.md                      十一個 skill 的中文說明與設定欄位
 .claude-plugin/plugin.json       外掛設定
@@ -207,7 +223,7 @@ LICENSE                          MIT 授權原文
 
 ## 出處與授權
 
-十一個 skill 改自 [Jakeschincariol/trader-skill](https://github.com/Jakeschincariol/trader-skill)，作者 [Jake Schincariol](https://opusjake.ai)，以 MIT 授權釋出，授權原文見 [LICENSE](LICENSE)。`.claude/skills/` 裡的檔案保持原樣；Raco 加上的設定檔、`CLAUDE.md`、中文說明與這份 README 同樣以 MIT 授權釋出。
+十一個 skill 改自 [Jakeschincariol/trader-skill](https://github.com/Jakeschincariol/trader-skill)，作者 [Jake Schincariol](https://opusjake.ai)，以 MIT 授權釋出，授權原文見 [LICENSE](LICENSE)。`.claude/skills/` 裡的檔案保持原樣；Raco 加上的設定範本、`CLAUDE.md`、中文說明與這份 README 同樣以 MIT 授權釋出。
 
 資料來自美國證交會 EDGAR、美國眾議院書記處、新聞 RSS 與 Yahoo 財經的公開資料，使用時請遵守各網站的使用規範。
 
