@@ -170,7 +170,7 @@ python3 .claude/skills/trader-alerts/alerts.py clock
 ```
 
 - 第一行會連美國證交會，看到波克夏（BERKSHIRE HATHAWAY INC）的 13F-HR 申報清單就是成功。
-- 第二行會印出紐約時間和美股現在有沒有開盤。
+- 第二行會印出紐約時間和美股現在有沒有開盤（沒開盤時結束代碼是 1，這是正常的）。
 - 證交會回 403 的話：問使用者的英文名字和 Email，寫進 `trader/config.json` 的 `sec_user_agent`（格式 `"Name name@example.com"`），再跑一次。
 - 用方式 B 安裝的話，腳本在 `~/.claude/plugins/` 底下，用 `find ~/.claude -name edgar13f.py` 找到路徑再跑。
 
