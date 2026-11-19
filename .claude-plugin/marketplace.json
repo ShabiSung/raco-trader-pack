@@ -1,0 +1,16 @@
+{
+  "name": "raco-trader",
+  "owner": { "name": "ShabiSung" },
+  "metadata": {
+    "description": "Raco 跟單包（繁體中文）",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "raco-trader-pack",
+      "source": "./",
+      "description": "Raco 跟單包：議員申報、大戶 13F、預算分配、持股新聞，11 個跟單 skill，預設模擬交易、你說好才下單",
+      "version": "1.0.0"
+    }
+  ]
+}

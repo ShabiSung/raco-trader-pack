@@ -1,0 +1,11 @@
+{
+  "name": "raco-trader-pack",
+  "version": "1.0.0",
+  "description": "Raco 跟單包：議員申報、大戶 13F、預算分配、持股新聞，11 個跟單 skill，預設模擬交易、你說好才下單（改自 Jakeschincariol/trader-skill，MIT）",
+  "author": { "name": "ShabiSung" },
+  "homepage": "https://github.com/ShabiSung/raco-trader-pack",
+  "repository": "https://github.com/ShabiSung/raco-trader-pack",
+  "license": "MIT",
+  "keywords": ["claude-code", "claude-skills", "13f", "congress-trades", "繁體中文"],
+  "skills": "./.claude/skills/"
+}
